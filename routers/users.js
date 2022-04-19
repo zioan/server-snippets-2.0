@@ -31,10 +31,10 @@ router.get('/register', (req, res) => {
   const findQuery = `SELECT * FROM users WHERE email = "${req.body.email}"`;
   const existingUser = db.query(findQuery, (err, result) => {
     if (err) {
-      return res.send(err);
+      return res.json({ message: err });
     }
     if (result.length > 0) {
-      return res.send('User already exists');
+      return res.json({ message: 'User already exists' });
     }
 
     //if no email found, register new user
@@ -86,7 +86,7 @@ router.get('/login', (req, res) => {
 
   const findUser = db.query(findQuery, (err, result) => {
     if (err) {
-      return res.send(err);
+      return res.json({ message: err });
     }
     if (result.length > 0) {
       if (bcrypt.compareSync(req.body.password, result[0].passwordHash)) {
@@ -121,12 +121,49 @@ router.get('/login', (req, res) => {
             token: token,
           });
       } else {
-        res.status(400).send('Password is wrong');
+        res.status(400).json({ message: 'Password is wrong' });
       }
     } else {
-      return res.send('no user found');
+      return res.status(400).json({ message: 'No user found' });
     }
   });
+});
+
+//check if the user is loged in
+router.get('/loggedIn', (req, res) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) return res.json(null);
+
+    const validatedUser = jwt.verify(token, process.env.SECRET);
+    console.log(validatedUser);
+    res.send(validatedUser);
+  } catch (err) {
+    return res.json(null);
+  }
+});
+
+//log out
+router.get('/logout', (req, res) => {
+  try {
+    res
+      .cookie('token', '', {
+        httpOnly: true,
+        sameSite:
+          process.env.NODE_ENV === 'development'
+            ? 'lax'
+            : process.env.NODE_ENV === 'production' && 'none',
+        secure:
+          process.env.NODE_ENV === 'development'
+            ? false
+            : process.env.NODE_ENV === 'production' && true,
+        expires: new Date(0),
+      })
+      .send('Logged out!');
+  } catch (err) {
+    return res.send(err);
+  }
 });
 
 module.exports = router;

@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 
 //create table is not already
 router.get('/createsnippetstable', (req, res) => {
-  let sql =
+  const sql =
     'CREATE TABLE snippets(id int AUTO_INCREMENT, user_id VARCHAR(255), title VARCHAR(255), tag VARCHAR(255), code VARCHAR(255), PRIMARY KEY (id))';
   db.query(sql, (err, result) => {
     if (err) {
@@ -18,8 +18,18 @@ router.get('/createsnippetstable', (req, res) => {
   });
 });
 
-//get all user snippets
-router.get('/:id', auth, (req, res) => {});
+// get all user snippets
+router.get('/all/:user_id', auth, (req, res) => {
+  const sql = `SELECT * FROM snippets WHERE user_id = "${req.params.user_id}"`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.json({ message: err });
+    } else {
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
 
 //create new snippet
 router.get('/add', auth, (req, res) => {
@@ -30,13 +40,72 @@ router.get('/add', auth, (req, res) => {
     code: req.body.code,
   };
 
-  let sql = 'INSERT INTO posts set ?';
-  db.query(sql, newSippet, (err, result) => {
+  const sql = 'INSERT INTO snippets set ?';
+  const snippet = db.query(sql, newSippet, (err, result) => {
     if (err) {
-      return res.send(err);
+      return res.json({ message: err });
     } else {
       console.log(result);
-      return res.send(result);
+      return res.json({ message: 'Snippet created' });
+    }
+  });
+});
+
+//update snippet
+router.get('/update/:id', auth, (req, res) => {
+  const newData = {
+    user_id: req.body.user_id,
+    title: req.body.title,
+    tag: req.body.tag,
+    code: req.body.code,
+  };
+
+  const sql = `UPDATE snippets SET user_id = '${newData.user_id}', title = '${newData.title}', tag = '${newData.tag}', code = '${newData.code}' WHERE id = ${req.params.id} AND user_id = ${req.body.user_id}`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.json({ message: err });
+    } else {
+      console.log(result);
+      return res.json({ message: result });
+    }
+  });
+});
+
+//sort user snippets by tag
+router.get('/tag/:tag', auth, async (req, res) => {
+  const sql = `SELECT * FROM snippets WHERE tag = "${req.params.tag}" AND user_id = "${req.body.user_id}"`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.json({ message: err });
+    } else {
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+//search snippet
+router.get('/search', auth, async (req, res) => {
+  const sql = `SELECT * FROM snippets WHERE user_id = "${req.body.user_id}" AND (title LIKE "%${req.body.search_item}%" OR code LIKE "%${req.body.search_item}%")`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.json({ message: err });
+    } else {
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+//delete snippet
+router.get('/delete/:id', auth, (req, res) => {
+  const sql = `DELETE from snippets WHERE id = ${req.params.id} AND user_id = ${req.body.user_id}`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.json({ message: err });
+    } else {
+      console.log(result);
+      res.send(result);
     }
   });
 });
