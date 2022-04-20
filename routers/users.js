@@ -20,7 +20,7 @@ router.get('/createuserstable', (req, res) => {
 });
 
 // register user
-router.get('/register', (req, res) => {
+router.post('/register', (req, res) => {
   const newUserData = {
     name: req.body.name,
     email: req.body.email,
@@ -34,7 +34,7 @@ router.get('/register', (req, res) => {
       return res.json({ message: err });
     }
     if (result.length > 0) {
-      return res.json({ message: 'User already exists' });
+      return res.status(400).send('User already exists');
     }
 
     //if no email found, register new user
@@ -59,14 +59,14 @@ router.get('/register', (req, res) => {
         res
           .cookie('token', token, {
             httpOnly: true,
-            // sameSite:
-            //   process.env.NODE_ENV === 'development'
-            //     ? 'lax'
-            //     : process.env.NODE_ENV === 'production' && 'none',
-            // secure:
-            //   process.env.NODE_ENV === 'development'
-            //     ? false
-            //     : process.env.NODE_ENV === 'production' && true,
+            sameSite:
+              process.env.NODE_ENV === 'development'
+                ? 'lax'
+                : process.env.NODE_ENV === 'production' && 'none',
+            secure:
+              process.env.NODE_ENV === 'development'
+                ? false
+                : process.env.NODE_ENV === 'production' && true,
           })
           .status(200)
           .send({
@@ -81,12 +81,13 @@ router.get('/register', (req, res) => {
 });
 
 //login
-router.get('/login', (req, res) => {
+router.post('/login', (req, res) => {
   const findQuery = `SELECT * FROM users WHERE email = "${req.body.email}"`;
 
   const findUser = db.query(findQuery, (err, result) => {
     if (err) {
-      return res.json({ message: err });
+      // return res.json({ message: 'No user found for this email address!' });
+      return res.send('No user found for this email address!');
     }
     if (result.length > 0) {
       if (bcrypt.compareSync(req.body.password, result[0].passwordHash)) {
@@ -121,10 +122,10 @@ router.get('/login', (req, res) => {
             token: token,
           });
       } else {
-        res.status(400).json({ message: 'Password is wrong' });
+        res.status(400).send('Password is wrong');
       }
     } else {
-      return res.status(400).json({ message: 'No user found' });
+      return res.status(400).send('User not found');
     }
   });
 });
@@ -145,7 +146,7 @@ router.get('/loggedIn', (req, res) => {
 });
 
 //log out
-router.get('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
   try {
     res
       .cookie('token', '', {

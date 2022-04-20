@@ -6,14 +6,14 @@ const auth = require('../middleware/auth');
 //create table is not already
 router.get('/createsnippetstable', (req, res) => {
   const sql =
-    'CREATE TABLE snippets(id int AUTO_INCREMENT, user_id VARCHAR(255), title VARCHAR(255), tag VARCHAR(255), code VARCHAR(255), PRIMARY KEY (id))';
+    'CREATE TABLE snippets(id int AUTO_INCREMENT, user_id VARCHAR(255), title VARCHAR(255), tag VARCHAR(255), code TEXT, timeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (id))';
   db.query(sql, (err, result) => {
     if (err) {
       console.log(err);
       res.send('Table already created');
     } else {
       console.log(result);
-      res.send('Users table created');
+      res.send('Snippets table created');
     }
   });
 });
@@ -25,14 +25,14 @@ router.get('/all/:user_id', auth, (req, res) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      console.log(result);
+      // console.log(result);
       res.send(result);
     }
   });
 });
 
 //create new snippet
-router.get('/add', auth, (req, res) => {
+router.post('/add', auth, (req, res) => {
   const newSippet = {
     user_id: req.body.user_id,
     title: req.body.title,
@@ -98,7 +98,7 @@ router.get('/search', auth, async (req, res) => {
 });
 
 //delete snippet
-router.get('/delete/:id', auth, (req, res) => {
+router.post('/delete/:id', auth, (req, res) => {
   const sql = `DELETE from snippets WHERE id = ${req.params.id} AND user_id = ${req.body.user_id}`;
   db.query(sql, (err, result) => {
     if (err) {

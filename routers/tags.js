@@ -32,7 +32,7 @@ router.get('/all/:user_id', auth, (req, res) => {
 });
 
 //create new tag
-router.get('/add', auth, (req, res) => {
+router.post('/add', auth, (req, res) => {
   const newTag = {
     user_id: req.body.user_id,
     tag: req.body.tag,
