@@ -61,20 +61,19 @@ router.get('/update/:id', auth, (req, res) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      console.log(result);
       return res.json({ message: result });
     }
   });
 });
 
 //delete tag
-router.get('/delete/:id', auth, (req, res) => {
-  const sql = `DELETE from tags WHERE id = ${req.params.id} AND user_id = ${req.body.user_id}`;
+router.delete('/delete/:id', auth, (req, res) => {
+  const sql = `DELETE from tags WHERE id = ${req.params.id}`;
+  // const sql = `DELETE from tags WHERE id = ${req.params.id} AND user_id = ${req.body.user_id}`;
   db.query(sql, (err, result) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      console.log(result);
       res.send(result);
     }
   });

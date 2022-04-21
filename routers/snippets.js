@@ -52,15 +52,14 @@ router.post('/add', auth, (req, res) => {
 });
 
 //update snippet
-router.get('/update/:id', auth, (req, res) => {
+router.put('/update/:id', auth, (req, res) => {
   const newData = {
-    user_id: req.body.user_id,
     title: req.body.title,
     tag: req.body.tag,
     code: req.body.code,
   };
 
-  const sql = `UPDATE snippets SET user_id = '${newData.user_id}', title = '${newData.title}', tag = '${newData.tag}', code = '${newData.code}' WHERE id = ${req.params.id} AND user_id = ${req.body.user_id}`;
+  const sql = `UPDATE snippets SET title = '${newData.title}', tag = '${newData.tag}', code = '${newData.code}' WHERE id = ${req.params.id}`;
   db.query(sql, (err, result) => {
     if (err) {
       return res.json({ message: err });
