@@ -25,7 +25,6 @@ router.get('/all/:user_id', auth, (req, res) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      console.log(result);
       res.send(result);
     }
   });
@@ -43,7 +42,6 @@ router.post('/add', auth, (req, res) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      console.log(result);
       return res.json({ message: 'Tag created' });
     }
   });

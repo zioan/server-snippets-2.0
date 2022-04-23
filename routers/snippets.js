@@ -25,7 +25,6 @@ router.get('/all/:user_id', auth, (req, res) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      // console.log(result);
       res.send(result);
     }
   });
@@ -64,7 +63,6 @@ router.put('/update/:id', auth, (req, res) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      console.log(result);
       return res.json({ message: result });
     }
   });
@@ -77,7 +75,7 @@ router.get('/tag/:tag', auth, async (req, res) => {
     if (err) {
       return res.json({ message: err });
     } else {
-      console.log(result);
+      console.log('updated');
       res.send(result);
     }
   });
