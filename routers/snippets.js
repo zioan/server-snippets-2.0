@@ -30,6 +30,18 @@ router.get('/all/:user_id', auth, (req, res) => {
   });
 });
 
+// Shared snippet
+router.get('/:user/:user_id/:snippet_id', (req, res) => {
+  const sql = `SELECT * FROM snippets WHERE user_id = "${req.params.user_id}" AND id="${req.params.snippet_id}"`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.json({ message: err });
+    } else {
+      res.send(result);
+    }
+  });
+});
+
 //create new snippet
 router.post('/add', auth, (req, res) => {
   const newSippet = {

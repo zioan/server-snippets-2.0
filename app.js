@@ -29,4 +29,8 @@ app.use(`/users`, usersRouter);
 app.use(`/tags`, tagsRouter);
 app.use(`/snippets`, snippetsRouter);
 
+// for development
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+
+// for production
+// app.listen(() => console.log(`Server running`));
