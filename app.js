@@ -16,6 +16,7 @@ app.use(
     origin: [
       'http://localhost:3000',
       'https://snippet-manager-test.netlify.app',
+      'https://snippets.zioan.com',
     ],
     credentials: true,
   }),
