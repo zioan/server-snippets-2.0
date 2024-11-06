@@ -1,9 +1,10 @@
-name: Deploy Backend
+name: Deploy Backend Manually
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch: # This enables manual triggering
 
 jobs:
   deploy:
@@ -26,9 +27,10 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /snippetsserver.zioan.com/
+          server-dir: ./
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             .env
+            .env.*
